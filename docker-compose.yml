@@ -1,0 +1,45 @@
+
+
+services:
+  backend:
+    build:
+      context: ./backend # Путь к Dockerfile и файлам для сборки бэкенда
+      dockerfile: Dockerfile # Имя Dockerfile (по умолчанию, можно опустить)
+    container_name: pdf_checker_backend_service # Имя контейнера для удобства
+    ports:
+      - "8000:8000" # Проброс порта: <порт_хоста>:<порт_контейнера>
+    env_file:
+      - ./backend/.env # Загружает переменные окружения из этого файла для бэкенда
+    volumes:
+      # Монтирует локальную папку app бэкенда в контейнер для live reload во время разработки.
+      # Изменения в локальной папке backend/app будут отражаться в контейнере.
+      - ./backend/app:/app/app
+    # Команда для запуска Uvicorn с --reload для разработки.
+    # Uvicorn будет слушать на всех интерфейсах (0.0.0.0) внутри контейнера.
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks: # Опционально, но хорошая практика для изоляции
+      - pdf_checker_network
+
+  frontend:
+    build:
+      context: ./frontend # Путь к Dockerfile и файлам для сборки фронтенда
+      dockerfile: Dockerfile # Имя Dockerfile
+      # args: # Можно передавать аргументы сборки в Dockerfile фронтенда, если нужно
+      #   REACT_APP_API_BASE_URL: http://backend:8000/api/v1 # Пример: если фронтенд обращается к бэку по имени сервиса
+    container_name: pdf_checker_frontend_service # Имя контейнера
+    ports:
+      - "3000:80" # Nginx в контейнере фронтенда слушает порт 80, мапим его на 3000 хоста
+    depends_on:
+      - backend # Указывает, что фронтенд зависит от бэкенда. Docker Compose попытается запустить бэкенд первым.
+                # Это не гарантирует, что бэкенд будет полностью готов принимать запросы, когда фронтенд запустится.
+    networks: # Опционально
+      - pdf_checker_network
+    # Для фронтенда, собранного с Nginx, volume mounts для live reload кода src/
+    # не будут работать без пересборки образа, так как Nginx раздает статичные файлы из /app/build.
+    # Для live-reload фронтенда во время разработки его обычно запускают локально (`npm start`).
+    # Или используют другой Dockerfile для разработки фронтенда, который запускает `npm start`.
+
+# Определение общей сети (опционально, но рекомендуется для лучшей организации)
+networks:
+  pdf_checker_network:
+    driver: bridge # Стандартный драйвер сети

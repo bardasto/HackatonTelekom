@@ -1,0 +1,389 @@
+/* Global Resets and Base Styles */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --background-color: #f0f2f5; 
+  --surface-color: #ffffff;
+  --text-color: #212529;
+  --text-light-color: #495057;
+  --error-color: #dc3545;
+  --success-color: #28a745;
+  --info-color: #17a2b8;
+  --border-color: #dee2e6;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Header */
+.App-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #0056b3 100%);
+  color: white;
+  padding: 18px 30px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky; /* Хедер будет "прилипать" к верху экрана при прокрутке */
+  top: 0;
+  z-index: 1000; /* Чтобы хедер был поверх другого контента */
+  width: 100%; /* Хедер на всю ширину окна */
+  box-sizing: border-box; /* Чтобы padding не увеличивал общую ширину */
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 1.7em;
+  font-weight: 600;
+}
+
+/* App Wrapper - контейнер для основного контента "в рамке" */
+.app-wrapper {
+  width: 100%;
+  max-width: 1400px; /* Максимальная ширина "рамки" */
+  margin: 25px auto; /* Отступ сверху/снизу и центрирование */
+  padding: 0; /* Внутренние отступы будут у <main> */
+  background-color: var(--surface-color); /* Фон для "рамки" */
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  flex-grow: 1; /* Занимает доступное вертикальное пространство */
+  display: flex;
+  flex-direction: column; /* Чтобы main и footer (если есть) располагались друг под другом */
+  overflow: hidden; /* Необходимо, если дочерние элементы имеют border-radius, чтобы не вылезали */
+}
+
+/* Main Content Area (внутри .app-wrapper) */
+main {
+  flex-grow: 1; /* main занимает все доступное место внутри .app-wrapper */
+  padding: 25px 30px; /* Внутренние отступы для контента */
+  /* max-width и margin: auto для main больше не нужны, т.к. .app-wrapper это делает */
+  box-sizing: border-box;
+}
+
+/* PDF Upload Area */
+.pdf-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 25px;
+  /* Убрал фон и тень, т.к. теперь это часть <main> внутри .app-wrapper */
+  /* background-color: var(--surface-color); */
+  /* border-radius: var(--border-radius); */
+  /* box-shadow: var(--box-shadow); */
+  margin-bottom: 30px;
+  border: 1px dashed var(--border-color); /* Можно добавить пунктирную рамку для зоны загрузки */
+  border-radius: var(--border-radius);
+}
+
+.pdf-upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 30px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1.05em;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  border: none;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.pdf-upload-label:hover:not(.disabled) {
+  background-color: #0069d9;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+.pdf-upload-label:active:not(.disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 123, 255, 0.3);
+}
+
+.pdf-upload-label.disabled {
+  background-color: var(--secondary-color);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Messages (Loading, Error, Info) */
+.message-bubble {
+  padding: 15px 20px;
+  border-radius: var(--border-radius);
+  margin: 25px 0; /* Теперь не auto, а 0, т.к. центрируется родитель <main> */
+  /* max-width: 90%; */ /* Уже не нужно, т.к. <main> ограничивает ширину */
+  text-align: left;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.07);
+  border-left-width: 5px;
+  border-left-style: solid;
+}
+
+.loading-spinner {
+  background-color: #e9ecef;
+  color: var(--text-light-color);
+  border-left-color: var(--primary-color);
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left-color: var(--error-color);
+}
+
+.info-message {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border-left-color: var(--info-color);
+}
+
+/* PDF Viewer Layout */
+.pdf-viewer-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 20px;
+  /* Убираем фон и тень, т.к. это теперь часть <main> */
+  /* background-color: var(--surface-color); */
+  /* padding: 25px; */
+  /* border-radius: var(--border-radius); */
+  /* box-shadow: var(--box-shadow); */
+}
+
+/* PDF Document View Area */
+.pdf-document-view {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  background-color: #f8f9fa;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Document {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page__canvas {
+  max-width: 100%;
+  height: auto !important;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.pdf-pagination {
+  margin-top: 20px;
+  text-align: center;
+  padding-top: 10px;
+}
+
+.pdf-pagination button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  margin: 0 8px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.pdf-pagination button:hover:not(:disabled) {
+  background-color: #0069d9;
+}
+.pdf-pagination button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.pdf-pagination button:disabled {
+  background-color: var(--secondary-color);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pdf-pagination span {
+  margin: 0 12px;
+  font-weight: 500;
+  color: var(--text-light-color);
+  vertical-align: middle;
+}
+
+/* Errors Panel */
+.errors-panel {
+  flex: 1;
+  min-width: 0;
+  padding: 20px;
+  background-color: var(--background-color); /* Может совпадать с фоном страницы или быть чуть светлее/темнее */
+  border-radius: var(--border-radius);
+  max-height: 75vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+}
+
+.errors-panel h4 {
+  color: var(--text-color);
+  margin-top: 0;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 1.15em;
+  font-weight: 600;
+}
+
+.errors-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.error-item {
+  background-color: var(--surface-color);
+  padding: 15px;
+  border-radius: var(--border-radius);
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+.error-item:last-child {
+  margin-bottom: 0;
+}
+
+.error-item p {
+  margin: 8px 0;
+  font-size: 0.98em;
+  color: var(--text-light-color);
+}
+.error-item strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.original-snippet, .corrected-snippet {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  padding: 3px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.original-snippet {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #b22222;
+  text-decoration: line-through;
+  border: 1px dashed rgba(220, 53, 69, 0.3);
+}
+.corrected-snippet {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #228b22;
+  border: 1px dashed rgba(40, 167, 69, 0.3);
+}
+
+.total-errors-summary {
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-light-color);
+}
+
+/* Footer (если будет) */
+/*
+.app-footer {
+  width: 100%;
+  max-width: 1400px; // Совпадает с .app-wrapper
+  margin: 0 auto; // Центрирование
+  text-align: center;
+  padding: 20px;
+  background-color: #e9ecef;
+  color: var(--text-light-color);
+  border-top: 1px solid var(--border-color);
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  margin-top: 20px; // Отступ от .app-wrapper
+  box-sizing: border-box;
+}
+*/
+
+/* Responsive Design */
+@media (max-width: 767.98px) {
+  .message-bubble {
+    /* max-width: 100%; */ /* Уже не нужно, main ограничивает */
+  }
+  .app-wrapper {
+    margin: 15px; /* Меньше отступы на мобильных */
+    border-radius: 0; /* Можно убрать скругление на мобильных для "на весь экран" */
+    box-shadow: none; /* Убрать тень на мобильных */
+  }
+  main {
+    padding: 15px; /* Меньше внутренние отступы */
+  }
+}
+
+@media (min-width: 768px) {
+  /* main { padding: 30px; } - уже установлено для <main> */
+  .pdf-viewer-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .pdf-document-view {
+    flex: 0 0 55%;
+    max-width: 55%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .errors-panel {
+    flex: 1;
+    max-height: 80vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pdf-document-view {
+    flex: 0 0 60%;
+    max-width: 60%;
+  }
+}
+
+/* 1. Делаем весь текст из HTML TextLayer по умолчанию прозрачным (невидимым) */
+.react-pdf__Page__textContent span,
+.react-pdf__Page__textContent .pdf-original-text { /* pdf-original-text - наш класс для неошибочного текста */
+  color: transparent !important;
+  background-color: transparent !important; /* Убедимся, что нет фона */
+  /* Важно: это может повлиять на возможность выделения текста мышью */
+}
+
+/* 2. Для <mark>, который мы используем для ошибок, задаем красный цвет текста */
+.react-pdf__Page__textContent .pdf-highlight {
+  color: var(--error-color) !important; /* Красный цвет */
+  background-color: transparent !important; /* Фон должен быть прозрачным, чтобы не было желтого/белого пятна */
+  font-weight: inherit; /* Можно попробовать 'bold' для лучшей видимости красного поверх черного */
+  /* Важно: текст на канвасе под этим <mark> все еще будет черным (или оригинального цвета).
+     Мы просто рисуем красный текст из HTML-слоя поверх него. */
+}
